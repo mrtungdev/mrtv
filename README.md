@@ -24,7 +24,7 @@ Bộ gõ tiếng Việt miễn phí, mã nguồn mở cho macOS — gõ chuẩn 
   <a href="docs/huong-dan-su-dung.md">Hướng dẫn đầy đủ</a>
 </p>
 
-> **Trạng thái:** bản 0.1 đang thử, chưa có bản phát hành chính thức. Bạn có thể [build từ mã nguồn](#build-từ-mã-nguồn) để dùng.
+> **Trạng thái:** bản 0.1 đang thử. Tải ở [Releases](https://github.com/mrtungdev/mrtv/releases/latest) (chưa ký với Apple, xem [Mở lần đầu](#mở-lần-đầu)) hoặc [build từ mã nguồn](#build-từ-mã-nguồn).
 
 ---
 
@@ -59,7 +59,7 @@ Lõi gõ viết bằng Rust, xử lý mỗi phím trong chưa tới một micro 
 
 **Yêu cầu:** macOS 12 Monterey trở lên, máy Intel hoặc Apple silicon.
 
-### Từ GitHub Releases (khi có bản phát hành)
+### Từ GitHub Releases
 
 1. Vào trang [Releases](https://github.com/mrtungdev/mrtv/releases/latest), tải tệp `MrTV-<phiên bản>.dmg`.
 2. Mở tệp `.dmg`, kéo **Mr TV** vào thư mục **Ứng dụng**.
@@ -186,7 +186,7 @@ Hướng dẫn đầy đủ: [docs/huong-dan-su-dung.md](docs/huong-dan-su-dung.
 ## Riêng tư
 
 - Mr TV **không gửi chữ bạn gõ ra ngoài** và **không lưu phím đã bấm**.
-- Bản hiện tại không kết nối mạng. Kiểm tra bản mới (khi có trang phát hành) chỉ gửi số phiên bản.
+- Kết nối mạng duy nhất là kiểm tra bản mới trên GitHub, chỉ gửi số phiên bản. Bản tự build từ mã nguồn không kết nối mạng.
 - Quyền Trợ năng chỉ dùng để đọc vài chữ quanh con trỏ hoặc chữ bạn bôi đen, ngay lúc cần, không lưu lại.
 - Nhật ký hệ thống của Mr TV không bao giờ chứa chữ bạn gõ.
 

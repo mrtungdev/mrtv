@@ -2,9 +2,14 @@
 
 Mọi thay đổi người dùng thấy được đều ghi ở đây. Định dạng theo [Keep a Changelog](https://keepachangelog.com/vi/1.1.0/), số phiên bản theo [SemVer](https://semver.org/lang/vi/).
 
-Khi phát hành, đổi "Chưa phát hành" thành `[phiên bản] - ngày`; `scripts/release.sh` lấy mục đó làm ghi chú phát hành.
+Khi phát hành, đổi "Chưa phát hành" thành `[phiên bản] - ngày`, thêm một mục "Chưa phát hành" trống ở trên và sửa link cuối tệp; `scripts/release.sh` lấy mục của phiên bản làm ghi chú phát hành.
 
 ## [Chưa phát hành]
+
+### Sửa
+- Tự cập nhật chạy từ bản này. Bản 0.1.0 không tự cài được bản mới: Mr TV báo có bản mới và mở trang tải, bạn tải về rồi cài đè lên.
+
+## [0.1.0] - 2026-10-28
 
 Bản đầu tiên.
 
@@ -23,3 +28,6 @@ Bản đầu tiên.
 - Cài đặt: tìm theo từng cài đặt (không dấu cũng được), mục Từ tiếng Anh dạng bảng, Gõ tắt sửa ngay trong Cài đặt, Phím tắt tự đặt và báo trùng.
 - Màn Bắt đầu, mở khi bật máy, ẩn/hiện biểu tượng trên thanh menu.
 - Chạy từ macOS 12, cả máy Intel lẫn Apple silicon.
+
+[Chưa phát hành]: https://github.com/mrtungdev/mrtv/compare/v0.1.0...HEAD
+[0.1.0]: https://github.com/mrtungdev/mrtv/releases/tag/v0.1.0

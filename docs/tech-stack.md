@@ -81,7 +81,7 @@ Cách giữ tốc độ:
 - Chưa đo độ trễ thật từ bấm tới hiện chữ, chưa có bộ thử 30 ứng dụng chạy tự động.
 - Sửa lỗi chính tả, thêm dấu bằng AI, viết lại, dịch: mới có thẻ việc, chưa có xử lý (bản 1.x và 2.0).
 - Nhập gõ tắt từ OpenKey/EVKey/Unikey, đồng bộ iCloud: chưa làm.
-- Sparkle chưa có địa chỉ cập nhật (`SUFeedURL` để trống). Ký Developer ID và công chứng (notarize) cần tài khoản Apple Developer.
+- `SUFeedURL` để trống trong mã; `release.sh` đặt địa chỉ cập nhật và khoá EdDSA khi đóng gói. Bản 0.1.0 thiếu khoá nên không tự cài được bản sau. Ký Developer ID và công chứng (notarize) cần tài khoản Apple Developer.
 
 ## Thử trên máy
 
