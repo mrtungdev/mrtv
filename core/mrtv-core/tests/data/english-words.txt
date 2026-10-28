@@ -1,0 +1,33 @@
+# Từ tiếng Anh và từ lập trình hay gõ lẫn khi đang ở chế độ Việt (Telex): gõ từ rồi bấm dấu cách phải ra đúng từ đó.
+# Không có ở đây vì chữ biến đổi ra cũng là âm tiết tiếng Việt (mập mờ thật, dùng esc hoặc thêm vào danh sách từ):
+# as → á, is → í, this → thí, these → thế, there → thể, test → tét, too → tô, see → sê, moon → môn, most → mót.
+a about access account across address admin affect after agree all also an and android angry
+angular any are array assert assets assign assist assume async at audio await aws azure back
+backend backlog be because benchmark between bless blur book books boolean boot boss boxing branch
+budget buffer bug build bun burger business but button by bye cache call callback can cancel career
+carry chat chess chicken chrome class classic click client close cloud code coffee come commit
+committee component confirm const context cookie cool correct could crash create cron cross current
+customer dare dashboard data database day deadline debug deep default delete delivery deno deploy
+design devops did difference different discount dismiss django do docker doing done download dress
+edit effect efficient email employee engineer error estimate even evening event export express
+facebook feature feedback figma file firefox first fix flask floor focus food for form free freedom
+from frontend fullstack function gcp get github gitlab give glass go golang good goods google grab
+grass green gross growth guarantee guess had handler happy have he hello hi him homepage hook
+hotfix hover i icon image import in input instagram intern into invoice iphone issue it java jira
+job junior just kafka keep keyboard kiss know kotlin kpi kubernetes label lambda landing laravel
+latency lazada leader leak less let like linux login logout look loop loss mac make manager
+marketing may maybe me meet meeting memory merge mess message method might mirror miss missing
+month morning mouse much my mysql need new next no node not notification notion null number object
+offer office ok okay okr on one online only open optimize order other our out output over page pass
+passport password patch payment people performance phone photo pipeline pizza plan please pool
+possible postgres press price priority process product profile profit progress project promise
+props pull push python rails react really redis reducer redux refresh release reload remote remove
+render report request response restart return revenue review root ruby sad safari said salad sale
+save say schedule school screen scroll senior server session setting settings shall share she
+shipping shopee should signup slack sleep so some sorry speed spring sprint staff start state
+status stop storage strategy street stress string stuff submit success suggest summary support sure
+svelte sweet swift take target task tea team teams teeth than thank thanks that the their them then
+they think three throughput ticket tiktok time timeout tired to today todo toggle tomorrow tool
+toss traffic twitter two ubuntu undefined unless up update upload use used user very video voucher
+vue want way we website week weekend welcome well were what when which who will windows with work
+worker worry would year yes yesterday you your youtube zoo zoom

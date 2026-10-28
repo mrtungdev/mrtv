@@ -1,0 +1,11 @@
+# Sinh ra khi build
+/build/
+/Frameworks/
+/core/target/
+/core/mrtv-ffi/include/mrtv.h
+/apple/MrTV.xcodeproj/
+*.xcuserstate
+xcuserdata/
+.DS_Store
+/dist/
+/MrTV.app/

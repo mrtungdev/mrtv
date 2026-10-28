@@ -1,0 +1,123 @@
+# Dự án Xcode của Mr TV, sinh bằng XcodeGen: `scripts/gen-project.sh` (đừng sửa tay MrTV.xcodeproj).
+name: MrTV
+options:
+  bundleIdPrefix: dev.mrtung
+  deploymentTarget:
+    macOS: "12.0"
+  createIntermediateGroups: true
+  developmentLanguage: vi
+
+packages:
+  Sparkle:
+    url: https://github.com/sparkle-project/Sparkle
+    from: "2.10.0"
+
+settings:
+  base:
+    MACOSX_DEPLOYMENT_TARGET: "12.0"
+    # Xcode 27 mặc định có thể chỉ build arm64: ghi rõ để có bản chạy cả máy Intel.
+    ARCHS: "arm64 x86_64"
+    SWIFT_VERSION: "6.0"
+    MARKETING_VERSION: "0.1.0"
+    CURRENT_PROJECT_VERSION: "1"
+    CODE_SIGN_IDENTITY: "-"
+    CODE_SIGN_STYLE: Manual
+    DEVELOPMENT_TEAM: ""
+    # Bản dev ký tạm (ad-hoc). Bật hardened runtime với chữ ký tạm thì macOS không cho nạp
+    # Sparkle (ký bởi nhóm khác) và ứng dụng văng ngay khi mở. scripts/release.sh ký lại toàn bộ
+    # bằng Developer ID kèm --options runtime, nên bản phát hành vẫn có hardened runtime.
+    ENABLE_HARDENED_RUNTIME: NO
+    DEAD_CODE_STRIPPING: YES
+    GENERATE_INFOPLIST_FILE: NO
+    SWIFT_TREAT_WARNINGS_AS_ERRORS: NO
+  configs:
+    Debug:
+      ONLY_ACTIVE_ARCH: YES
+    Release:
+      ONLY_ACTIVE_ARCH: NO
+      SWIFT_OPTIMIZATION_LEVEL: "-O"
+
+targets:
+  MrTVInput:
+    type: application
+    platform: macOS
+    sources:
+      - path: MrTVInput
+        excludes: [Info.plist]
+      - path: Shared
+    resources:
+      - path: MrTVInput/Resources
+    settings:
+      base:
+        PRODUCT_NAME: MrTVInput
+        PRODUCT_BUNDLE_IDENTIFIER: dev.mrtung.inputmethod.mrtv
+        INFOPLIST_FILE: MrTVInput/Info.plist
+        # InputMethodKit chưa có chú thích concurrency: lớp con IMKInputController không qua được
+        # kiểm tra của Swift 6, nên riêng bộ gõ dùng chế độ Swift 5 (vẫn cảnh báo đầy đủ).
+        SWIFT_VERSION: "5.0"
+        SWIFT_STRICT_CONCURRENCY: targeted
+    dependencies:
+      - framework: ../Frameworks/MrTVCore.xcframework
+        embed: false
+      - sdk: InputMethodKit.framework
+      - sdk: Carbon.framework
+
+  MrTV:
+    type: application
+    platform: macOS
+    sources:
+      - path: MrTV
+        excludes: [Info.plist]
+      - path: Shared
+      # Giấy phép MIT của Mr TV và của thư viện đi kèm phải đi cùng mọi bản build.
+      - path: ../LICENSE
+        buildPhase: resources
+      - path: ../THIRD_PARTY_NOTICES.md
+        buildPhase: resources
+    settings:
+      base:
+        PRODUCT_NAME: MrTV
+        PRODUCT_BUNDLE_IDENTIFIER: dev.mrtung.mrtv
+        INFOPLIST_FILE: MrTV/Info.plist
+        ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
+    dependencies:
+      - target: MrTVInput
+        embed: true
+        codeSign: true
+        copy:
+          destination: wrapper
+          subpath: Contents/Library/Input Methods
+      - framework: ../Frameworks/MrTVCore.xcframework
+        embed: false
+      # Xcode tự nhúng Sparkle vào Contents/Frameworks nhưng giữ chữ ký gốc của nhóm Sparkle;
+      # scripts/build.sh ký lại cả gói cho đồng bộ.
+      - package: Sparkle
+      - sdk: Carbon.framework
+      - sdk: ServiceManagement.framework
+
+  MrTVTests:
+    type: bundle.unit-test
+    platform: macOS
+    sources:
+      - path: Tests
+      - path: Shared
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: dev.mrtung.mrtv.tests
+        GENERATE_INFOPLIST_FILE: YES
+    dependencies:
+      - framework: ../Frameworks/MrTVCore.xcframework
+        embed: false
+
+schemes:
+  MrTV:
+    build:
+      targets:
+        MrTV: all
+        MrTVInput: all
+    test:
+      targets: [MrTVTests]
+  MrTVInput:
+    build:
+      targets:
+        MrTVInput: all

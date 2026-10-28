@@ -1,0 +1,8 @@
+blank_issues_enabled: false
+contact_links:
+  - name: Báo lỗ hổng bảo mật (riêng tư)
+    url: https://github.com/mrtungdev/mrtv/security/advisories/new
+    about: Đừng mở issue công khai cho lỗ hổng bảo mật. Xem SECURITY.md.
+  - name: Hướng dẫn sử dụng
+    url: https://github.com/mrtungdev/mrtv/blob/main/docs/huong-dan-su-dung.md
+    about: Cách cài, cách gõ, bảng lệnh, gõ tắt, khi có sự cố.

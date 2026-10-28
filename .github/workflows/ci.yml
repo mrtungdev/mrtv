@@ -1,0 +1,19 @@
+name: Kiểm tra
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  check:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Công cụ
+        run: |
+          brew install xcodegen
+          rustup target add aarch64-apple-darwin x86_64-apple-darwin
+          rustup component add clippy rustfmt
+      - name: make check
+        run: scripts/check.sh

@@ -1,0 +1,14 @@
+language = "C"
+include_guard = "MRTV_H"
+autogen_warning = "/* Tệp sinh tự động bởi cbindgen từ core/mrtv-ffi/src/lib.rs. Đừng sửa tay. */"
+style = "type"
+cpp_compat = true
+usize_is_size_t = true
+sys_includes = ["stdbool.h", "stdint.h"]
+no_includes = true
+
+[export]
+include = ["MrtvConfig", "MrtvOutput"]
+
+[parse]
+parse_deps = false

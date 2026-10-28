@@ -1,0 +1,17 @@
+[package]
+name = "mrtv-ffi"
+description = "C ABI của lõi Mr TV cho Swift (bộ gõ macOS và ứng dụng trên thanh menu)."
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[lib]
+crate-type = ["staticlib", "rlib"]
+
+[dependencies]
+mrtv-core = { path = "../mrtv-core" }
+
+[build-dependencies]
+cbindgen = { version = "0.27", default-features = false }

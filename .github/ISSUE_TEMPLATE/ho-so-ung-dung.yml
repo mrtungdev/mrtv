@@ -1,0 +1,40 @@
+name: Hồ sơ ứng dụng
+description: Đề xuất cách Mr TV nên gõ trong một ứng dụng.
+labels: ["hồ sơ ứng dụng"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Hồ sơ cho Mr TV biết đưa chữ vào một ứng dụng bằng cách nào. Thử từng cách ở menu Mr TV › Cách gõ trong <ứng dụng>, gõ nhanh một đoạn dài có xoá lùi, rồi cho biết cách nào không mất chữ.
+  - type: input
+    id: app
+    attributes:
+      label: Tên ứng dụng và phiên bản
+      placeholder: "Zalo 25.1"
+    validations:
+      required: true
+  - type: input
+    id: bundle
+    attributes:
+      label: Mã ứng dụng (bundle ID)
+      description: "Chạy trong Terminal: osascript -e 'id of app \"Zalo\"'"
+      placeholder: "com.vng.zalo"
+    validations:
+      required: true
+  - type: checkboxes
+    id: works
+    attributes:
+      label: Cách chạy tốt (không mất, không nhân đôi chữ)
+      options:
+        - label: Gõ chuẩn (không gạch chân)
+        - label: Gõ đè (xoá rồi gõ lại)
+        - label: Chữ gạch chân
+  - type: input
+    id: macos
+    attributes:
+      label: Phiên bản macOS
+  - type: textarea
+    id: notes
+    attributes:
+      label: Ghi chú
+      description: Ô nào hay lỗi (ô chat, ô tìm kiếm, ô có gợi ý tự động…), có cần chỉnh độ trễ không.

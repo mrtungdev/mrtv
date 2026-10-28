@@ -1,0 +1,20 @@
+[package]
+name = "mrtv-core"
+description = "Bộ máy gõ tiếng Việt của Mr TV: âm tiết, Telex/VNI, đặt dấu, gõ tắt, công cụ chữ."
+version.workspace = true
+edition.workspace = true
+publish.workspace = true
+license.workspace = true
+repository.workspace = true
+
+[dependencies]
+unicode-normalization = "0.1"
+unicode-segmentation = "1"
+
+[dev-dependencies]
+proptest = "1"
+criterion = { version = "0.5", default-features = false }
+
+[[bench]]
+name = "typing"
+harness = false

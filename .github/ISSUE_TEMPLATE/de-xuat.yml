@@ -1,0 +1,26 @@
+name: Đề xuất tính năng
+description: Một việc Mr TV nên làm giúp bạn.
+labels: ["đề xuất"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Bạn đang gặp chuyện gì?
+      description: Kể việc bạn làm hằng ngày và chỗ còn mất công.
+      placeholder: "Mỗi lần viết hoá đơn tôi phải tự gõ số tiền bằng chữ…"
+    validations:
+      required: true
+  - type: textarea
+    id: idea
+    attributes:
+      label: Bạn mong Mr TV làm gì?
+  - type: dropdown
+    id: group
+    attributes:
+      label: Thuộc nhóm việc nào?
+      options: ["Sửa — chữ sai thành chữ đúng", "Viết — cùng ý, cách nói khác", "Dịch", "Đổi dạng chữ", "Khác / không chắc"]
+  - type: textarea
+    id: example
+    attributes:
+      label: Ví dụ
+      description: Chữ trước và sau khi làm việc đó (dùng chữ mẫu, đừng dùng chữ riêng tư).

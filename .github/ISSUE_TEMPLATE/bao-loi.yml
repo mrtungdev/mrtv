@@ -1,0 +1,75 @@
+name: Báo lỗi
+description: Gõ sai, mất chữ, nhân đôi chữ, hoặc Mr TV không chạy như mong đợi.
+labels: ["lỗi"]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        Cảm ơn bạn đã báo lỗi. **Đừng dán chữ riêng tư** — chỉ cần các phím đã bấm, ví dụ `tieesng`.
+  - type: input
+    id: version
+    attributes:
+      label: Phiên bản Mr TV
+      description: Xem ở menu Mr TV › Về Mr TV.
+      placeholder: "0.1.0"
+    validations:
+      required: true
+  - type: input
+    id: macos
+    attributes:
+      label: Phiên bản macOS
+      placeholder: "macOS 15.4"
+    validations:
+      required: true
+  - type: dropdown
+    id: chip
+    attributes:
+      label: Loại máy
+      options: ["Apple silicon (M1 trở lên)", "Intel"]
+    validations:
+      required: true
+  - type: input
+    id: app
+    attributes:
+      label: Ứng dụng đang gõ và phiên bản
+      placeholder: "Chrome 140, ô địa chỉ"
+    validations:
+      required: true
+  - type: dropdown
+    id: path
+    attributes:
+      label: Cách gõ trong ứng dụng đó
+      description: Xem ở menu Mr TV › Cách gõ trong <ứng dụng>. Để Tự động thì chọn cách ghi mờ cạnh chữ Tự động.
+      options: ["Gõ chuẩn", "Gõ đè", "Chữ gạch chân", "Không biết"]
+  - type: dropdown
+    id: method
+    attributes:
+      label: Kiểu gõ
+      options: ["Telex", "Telex đơn giản", "VNI"]
+  - type: input
+    id: keys
+    attributes:
+      label: Phím đã bấm
+      placeholder: "tieesng Vieejt"
+  - type: input
+    id: got
+    attributes:
+      label: Chữ hiện ra
+      placeholder: "tiéng Việt"
+  - type: input
+    id: want
+    attributes:
+      label: Chữ mong muốn
+      placeholder: "tiếng Việt"
+  - type: textarea
+    id: more
+    attributes:
+      label: Thêm chi tiết
+      description: Lỗi xảy ra khi nào, có lặp lại được không, ảnh chụp màn hình (che chữ riêng tư).
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Riêng tư
+      options:
+        - label: Tôi không dán chữ hay thông tin riêng tư của ai vào đây.
+          required: true
