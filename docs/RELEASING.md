@@ -28,25 +28,34 @@ Lưu hồ sơ công chứng vào Chuỗi khoá (dùng mật khẩu riêng cho �
 xcrun notarytool store-credentials mrtv-notary --apple-id "<email Apple ID>" --team-id "<TEAMID>"
 ```
 
-Tạo khoá EdDSA cho Sparkle. Khoá riêng nằm trong Chuỗi khoá; lệnh in ra khoá công khai, giữ lại để dùng làm `SPARKLE_PUBLIC_KEY`. Chạy sau khi đã build ít nhất một lần, để Sparkle có trong `build/`:
+Tạo khoá EdDSA cho Sparkle. Khoá riêng nằm trong Chuỗi khoá; `release.sh` tự lấy khoá công khai từ đó (`generate_keys -p`) để ghi vào ứng dụng và ký `appcast.xml`. Chạy sau khi đã build ít nhất một lần, để Sparkle có trong `build/`:
 
 ```bash
 build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys
 ```
+
+Sao lưu khoá riêng ra tệp, cất vào trình quản lý mật khẩu rồi xoá tệp. Mất khoá này thì người dùng không tự cập nhật được nữa:
+
+```bash
+build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_keys -x ~/Desktop/mrtv-sparkle-private-key
+```
+
+Không có khoá thì `release.sh` không bật tự cập nhật cho bản đó (không đặt `SUFeedURL`), vì bản ký tạm chỉ có khoá EdDSA để Sparkle tin bản mới. Bản 0.1.0 ra đời như vậy, nên appcast của mọi bản sau chỉ báo cho nó "có bản mới" kèm nút mở trang tải (`--informational-update-versions "<2"` trong `release.sh`).
 
 Đặt biến môi trường, ví dụ trong `~/.zshrc`:
 
 ```bash
 export DEVELOPER_ID="Developer ID Application: Tên Của Bạn (TEAMID)"
 export NOTARY_PROFILE="mrtv-notary"
-export SPARKLE_PUBLIC_KEY="<khoá công khai in ra từ generate_keys>"
 ```
+
+`SPARKLE_PUBLIC_KEY` chỉ cần khi đóng gói ở máy không có khoá riêng trong Chuỗi khoá; có cả hai thì script kiểm tra chúng khớp nhau.
 
 Thiếu biến nào thì `release.sh` bỏ qua bước đó và báo rõ, nên vẫn thử đóng gói được trên máy chưa có tài khoản Apple Developer. Bản đó ký tạm, chỉ dùng để thử.
 
 ## Các bước phát hành
 
-1. **Ghi thay đổi.** Trong `CHANGELOG.md`, đổi mục "Chưa phát hành" thành `## [0.1.0] - 2026-11-01` và viết những gì người dùng thấy được. Script lấy đúng mục này làm ghi chú phát hành.
+1. **Ghi thay đổi.** Trong `CHANGELOG.md`, đổi mục "Chưa phát hành" thành `## [0.1.1] - <ngày>`, thêm một mục "Chưa phát hành" trống ở trên, và sửa hai dòng link cuối tệp. Script lấy đúng mục của phiên bản làm ghi chú phát hành (kèm vào appcast để hiện trong hộp thoại cập nhật).
 2. **Commit** thay đổi đó. Script không đóng gói khi còn thay đổi chưa commit.
 3. **Đóng gói thử**, kiểm tra kỹ trước khi đăng:
 
@@ -62,7 +71,9 @@ Thiếu biến nào thì `release.sh` bỏ qua bước đó và báo rõ, nên v
    make release VERSION=0.1.0 PUBLISH=1
    ```
 
-   Script commit thay đổi phiên bản, gắn tag `v0.1.0`, đẩy lên GitHub và tạo **bản nháp** kèm các tệp. Không có gì được công bố cho tới khi bạn bấm **Publish release** trên GitHub.
+   Script commit thay đổi phiên bản, gắn tag `v0.1.0`, đẩy lên GitHub và tạo **bản nháp** kèm các tệp. Không có gì được công bố cho tới khi bạn bấm **Publish release** trên GitHub. **Đừng đánh dấu Pre-release**: ứng dụng tìm `appcast.xml` ở bản mới nhất (`releases/latest`), mục này bỏ qua pre-release.
+
+   Tag đẩy lên cũng chạy workflow Phát hành; thấy tag đã có bản phát hành, workflow chỉ đóng gói để kiểm tra rồi dừng.
 6. **Cập nhật Homebrew:** chép `dist/0.1.0/mr-tv.rb` vào kho tap của dự án.
 
 ## Phát hành bằng GitHub Actions
@@ -75,15 +86,14 @@ Thiếu biến nào thì `release.sh` bỏ qua bước đó và báo rõ, nên v
 | `DEVELOPER_ID_P12_PASSWORD` | Mật khẩu của tệp .p12 |
 | `DEVELOPER_ID` | Tên chứng chỉ, ví dụ `Developer ID Application: Tên (TEAMID)` |
 | `APPLE_ID`, `APPLE_TEAM_ID`, `APPLE_APP_PASSWORD` | Để công chứng |
-| `SPARKLE_PUBLIC_KEY` | Khoá công khai EdDSA |
 
-Thiếu bí mật thì workflow vẫn chạy nhưng tạo bản ký tạm. appcast.xml cần khoá EdDSA riêng nên chỉ tạo trên máy người giữ dự án.
+Thiếu bí mật thì workflow vẫn chạy nhưng tạo bản ký tạm. Bản dựng trên CI **không bật tự cập nhật** và không có `appcast.xml`, vì khoá EdDSA riêng chỉ nằm trên máy người giữ dự án; bản phát hành chính thức nên làm từ máy bằng `make release … PUBLISH=1`.
 
 ## Số phiên bản
 
 - Theo [SemVer](https://semver.org/lang/vi/): `1.2.3`; bản thử: `1.3.0-beta.1`.
 - Số build (`CFBundleVersion`) là số commit trên nhánh hiện tại, luôn tăng. Sparkle và trình cài bộ gõ dựa vào số này để biết có bản mới.
-- Bản "Dùng thử sớm" là phiên bản có hậu tố `-beta.N`, đăng dạng pre-release.
+- Bản thử là phiên bản có hậu tố `-beta.N`, đăng dạng pre-release. Sparkle không thấy pre-release, người thử tải tay.
 
 ## Danh sách thử trước khi đăng
 

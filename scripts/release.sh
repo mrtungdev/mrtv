@@ -7,7 +7,8 @@
 # Biến môi trường, thiếu biến nào thì bỏ qua bước đó và báo rõ:
 #   DEVELOPER_ID        "Developer ID Application: Tên (TEAMID)" để ký, Gatekeeper mới cho mở
 #   NOTARY_PROFILE      hồ sơ công chứng đã lưu bằng: xcrun notarytool store-credentials <tên>
-#   SPARKLE_PUBLIC_KEY  khoá công khai EdDSA của Sparkle (sinh bằng generate_keys), ghi vào Info.plist
+#   SPARKLE_PUBLIC_KEY  khoá công khai EdDSA của Sparkle. Bỏ trống thì lấy từ Chuỗi khoá (generate_keys -p).
+#                       Có khoá thì bản này tự cập nhật; không có thì không đặt địa chỉ cập nhật.
 set -euo pipefail
 source "${0:A:h}/lib.sh"
 
@@ -54,18 +55,23 @@ mkdir -p "$DIST"
 
 step "Cấu hình cập nhật"
 PLIST="$APP/Contents/Info.plist"
-if [[ -n "$REPO" ]]; then
-  /usr/libexec/PlistBuddy -c "Set :SUFeedURL https://github.com/$REPO/releases/latest/download/appcast.xml" "$PLIST"
-  ok "SUFeedURL trỏ tới appcast của bản mới nhất"
-else
-  warn "Để trống SUFeedURL: bản này không tự cập nhật"
+SPARKLE_BIN="$ROOT/build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin"
+KEYCHAIN_KEY="$("$SPARKLE_BIN/generate_keys" -p 2>/dev/null || true)"
+if [[ -n "${SPARKLE_PUBLIC_KEY:-}" && -n "$KEYCHAIN_KEY" && "$SPARKLE_PUBLIC_KEY" != "$KEYCHAIN_KEY" ]]; then
+  fail "SPARKLE_PUBLIC_KEY khác khoá trong Chuỗi khoá: bản cập nhật sẽ không qua được kiểm tra chữ ký."
 fi
-if [[ -n "${SPARKLE_PUBLIC_KEY:-}" ]]; then
+SPARKLE_PUBLIC_KEY="${SPARKLE_PUBLIC_KEY:-$KEYCHAIN_KEY}"
+# Chỉ bật tự cập nhật khi ký được appcast. Có địa chỉ mà thiếu khoá thì Sparkle báo lỗi khi kiểm tra
+# và không bao giờ cài được bản sau (bản ký tạm không có chữ ký Apple cố định để đối chiếu).
+UPDATES=0
+if [[ -n "$REPO" && -n "$SPARKLE_PUBLIC_KEY" ]]; then
+  /usr/libexec/PlistBuddy -c "Set :SUFeedURL https://github.com/$REPO/releases/latest/download/appcast.xml" "$PLIST"
   /usr/libexec/PlistBuddy -c "Add :SUPublicEDKey string $SPARKLE_PUBLIC_KEY" "$PLIST" 2>/dev/null \
     || /usr/libexec/PlistBuddy -c "Set :SUPublicEDKey $SPARKLE_PUBLIC_KEY" "$PLIST"
-  ok "SUPublicEDKey"
+  UPDATES=1
+  ok "Tự cập nhật: SUFeedURL trỏ tới appcast của bản mới nhất, SUPublicEDKey"
 else
-  warn "Chưa có SPARKLE_PUBLIC_KEY: Sparkle sẽ không nhận bản cập nhật chưa được ký EdDSA"
+  warn "Không bật tự cập nhật: cần remote GitHub và khoá EdDSA (chạy generate_keys của Sparkle một lần)"
 fi
 
 step "Ký ứng dụng"
@@ -118,6 +124,7 @@ NOTES="$DIST/RELEASE_NOTES.md"
 awk -v v="$VERSION" '
   $0 ~ "^## \\[" v "\\]" {on=1; next}
   on && /^## \[/ {exit}
+  on && /^\[[^]]+\]: / {exit}
   on {print}
 ' "$ROOT/CHANGELOG.md" > "$NOTES" || true
 if [[ ! -s "$NOTES" ]]; then
@@ -146,15 +153,25 @@ EOF
   ok "Thêm cách mở bản chưa công chứng vào ghi chú"
 fi
 
+if (( UPDATES )); then
+  step "Appcast"
+  # generate_appcast không nhận hai tệp cùng phiên bản (DMG và ZIP): chỉ đưa ZIP, kèm ghi chú cùng tên.
+  FEED_SRC=$(mktemp -d)
+  cp "$ZIP" "$FEED_SRC/"
+  cp "$NOTES" "$FEED_SRC/MrTV-$VERSION.md"
+  # Bản 0.1.0 (số build 1) ra khi chưa có khoá EdDSA nên không tự cài được bản sau:
+  # với nó, bản mới chỉ là thông báo kèm nút mở trang tải.
+  "$SPARKLE_BIN/generate_appcast" --embed-release-notes \
+    --download-url-prefix "https://github.com/$REPO/releases/download/v$VERSION/" \
+    --link "https://github.com/$REPO/releases/latest" --informational-update-versions "<2" \
+    -o "$DIST/appcast.xml" "$FEED_SRC" \
+    || fail "Không tạo được appcast.xml. Chuỗi khoá hỏi quyền cho generate_appcast thì bấm Cho phép."
+  rm -rf "$FEED_SRC"
+  ok "appcast.xml (đã ký EdDSA)"
+fi
+
 if [[ -n "$REPO" ]]; then
-  step "Appcast và Homebrew"
-  GEN="$ROOT/build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin/generate_appcast"
-  if [[ -x "$GEN" ]] && "$GEN" --download-url-prefix "https://github.com/$REPO/releases/download/v$VERSION/" \
-       -o "$DIST/appcast.xml" "$DIST" >/dev/null 2>&1; then
-    ok "appcast.xml (đã ký EdDSA)"
-  else
-    warn "Không tạo được appcast.xml: cần khoá EdDSA trong Chuỗi khoá (chạy generate_keys của Sparkle một lần)"
-  fi
+  step "Homebrew"
   SHA=$(shasum -a 256 "$DMG" | cut -d' ' -f1)
   cat > "$DIST/mr-tv.rb" <<EOF
 cask "mr-tv" do

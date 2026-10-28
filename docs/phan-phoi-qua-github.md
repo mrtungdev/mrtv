@@ -39,7 +39,7 @@ Chứng chỉ **Apple Development** mà bản dev đang dùng (`make install`) k
    ```
 
 4. **Tạo khoá EdDSA cho Sparkle** để ký bản cập nhật (lệnh `generate_keys`, xem [RELEASING.md](RELEASING.md#chuẩn-bị-một-lần)). Mất khoá riêng thì người dùng bản cũ không tự cập nhật lên được nữa, nên sao lưu nó.
-5. **Đặt biến môi trường** `DEVELOPER_ID`, `NOTARY_PROFILE`, `SPARKLE_PUBLIC_KEY` như trong [RELEASING.md](RELEASING.md#chuẩn-bị-một-lần).
+5. **Đặt biến môi trường** `DEVELOPER_ID`, `NOTARY_PROFILE` như trong [RELEASING.md](RELEASING.md#chuẩn-bị-một-lần). Khoá công khai của Sparkle thì `release.sh` tự lấy từ Chuỗi khoá.
 6. **Kho GitHub phải công khai.** Kho để **Private** thì người ngoài không tải được tệp trong Releases, Sparkle không đọc được `appcast.xml`, Homebrew không tải được DMG. Kiểm tra ở **Settings › General › Danger Zone › Change visibility** (hoặc đăng bản phát hành ở một kho công khai riêng).
 
 ## Mỗi lần phát hành

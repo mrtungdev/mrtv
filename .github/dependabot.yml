@@ -1,0 +1,12 @@
+# Dependabot mở PR khi crate Rust hay action có bản mới. Sparkle (Swift Package) không theo dõi được
+# vì dự án Xcode sinh từ apple/project.yml và không commit Package.resolved.
+version: 2
+updates:
+  - package-ecosystem: cargo
+    directory: /core
+    schedule:
+      interval: weekly
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: monthly

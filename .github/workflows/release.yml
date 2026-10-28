@@ -1,7 +1,9 @@
 name: Phát hành
 
 # Đẩy một tag "v0.1.0" là workflow tự đóng gói và tạo BẢN NHÁP trên GitHub Releases.
-# Thiếu bí mật nào thì bước tương ứng bị bỏ qua (bản ký tạm). Xem docs/RELEASING.md.
+# Thiếu bí mật nào thì bước tương ứng bị bỏ qua (bản ký tạm). Bản dựng ở đây không bật tự cập nhật:
+# khoá EdDSA của Sparkle chỉ nằm trên máy người giữ dự án. Tag đã có bản phát hành (tạo từ máy bằng
+# make release PUBLISH=1) thì workflow chỉ đóng gói để kiểm tra. Xem docs/RELEASING.md.
 on:
   push:
     tags: ["v*"]
@@ -19,7 +21,6 @@ jobs:
       APPLE_ID: ${{ secrets.APPLE_ID }}
       APPLE_TEAM_ID: ${{ secrets.APPLE_TEAM_ID }}
       APPLE_APP_PASSWORD: ${{ secrets.APPLE_APP_PASSWORD }}
-      SPARKLE_PUBLIC_KEY: ${{ secrets.SPARKLE_PUBLIC_KEY }}
     steps:
       - uses: actions/checkout@v4
         with:
@@ -57,6 +58,10 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
+          if [ -n "$(gh release list --json tagName --jq ".[] | select(.tagName == \"$GITHUB_REF_NAME\") | .tagName")" ]; then
+            echo "Tag $GITHUB_REF_NAME đã có bản phát hành (tạo từ máy), bỏ qua."
+            exit 0
+          fi
           V="${GITHUB_REF_NAME#v}"
           D="dist/$V"
           gh release create "$GITHUB_REF_NAME" "$D/MrTV-$V.dmg" "$D/MrTV-$V.zip" "$D/SHA256SUMS.txt" \
