@@ -14,4 +14,4 @@ crate-type = ["staticlib", "rlib"]
 mrtv-core = { path = "../mrtv-core" }
 
 [build-dependencies]
-cbindgen = { version = "0.27", default-features = false }
+cbindgen = { version = "0.29", default-features = false }
