@@ -56,7 +56,11 @@ mkdir -p "$DIST"
 step "Cấu hình cập nhật"
 PLIST="$APP/Contents/Info.plist"
 SPARKLE_BIN="$ROOT/build/DerivedData/SourcePackages/artifacts/sparkle/Sparkle/bin"
-KEYCHAIN_KEY="$("$SPARKLE_BIN/generate_keys" -p 2>/dev/null || true)"
+# Không có khoá thì generate_keys vẫn in "ERROR: …" ra stdout: chỉ nhận khi chạy thành công và đúng dạng khoá.
+KEYCHAIN_KEY=""
+if out="$("$SPARKLE_BIN/generate_keys" -p 2>/dev/null)" && [[ "$out" =~ '^[A-Za-z0-9+/]{43}=$' ]]; then
+  KEYCHAIN_KEY="$out"
+fi
 if [[ -n "${SPARKLE_PUBLIC_KEY:-}" && -n "$KEYCHAIN_KEY" && "$SPARKLE_PUBLIC_KEY" != "$KEYCHAIN_KEY" ]]; then
   fail "SPARKLE_PUBLIC_KEY khác khoá trong Chuỗi khoá: bản cập nhật sẽ không qua được kiểm tra chữ ký."
 fi
