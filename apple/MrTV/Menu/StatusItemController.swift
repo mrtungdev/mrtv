@@ -136,6 +136,9 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         } else if InputSourceInstaller.status != .ready {
             menu.addItem(warning(InputSourceInstaller.status.problem, detail: "Gõ phím nào cũng ra chữ không dấu."))
             menu.addItem(item("Dùng bộ gõ Mr TV") { $0.useInputSource() })
+        } else if let conflict = ShortcutStore.shared.macOSConflict(.toggle) {
+            menu.addItem(warning("Phím đổi Việt ⇄ Anh trùng phím của macOS", detail: conflict))
+            menu.addItem(item("Mở cài đặt Phím của Mr TV…") { $0.openSettings(.keys) })
         } else if !Permissions.accessibility {
             menu.addItem(warning("Mr TV chưa có quyền Trợ năng", detail: "Chưa gõ được ở Chrome, VS Code, Terminal."))
             menu.addItem(item("Cấp quyền…") { _ in Permissions.askAccessibility() })
