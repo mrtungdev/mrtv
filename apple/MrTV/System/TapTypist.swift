@@ -218,7 +218,13 @@ final class TapTypist: @unchecked Sendable {
             }
             post(backspaces: edit.deleteKeys, text: edit.text, delay: st.delay, fixAutocomplete: false)
             return nil
-        case 36, 48, 76, 115, 116, 117, 119, 121, 123, 124, 125, 126:
+        case 36, 48, 76:
+            // ↩ / Tab mở dòng hay ô mới, trước con trỏ không có từ nào để sửa tiếp. Đừng đọc lại qua Trợ năng:
+            // Zalo (Electron) còn báo chữ của tin vừa gửi một lúc, phím đầu của tin sau sẽ gõ lại chữ đó.
+            engine.reset()
+            needsContext = false
+            return pass
+        case 115, 116, 117, 119, 121, 123, 124, 125, 126:
             forget(engine)
             return pass
         default:
