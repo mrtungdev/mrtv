@@ -583,11 +583,14 @@ impl Engine {
             self.clear_word();
             return Output::PASS;
         }
-        if self.locked {
+        // Từ lấy lại từ màn hình thì dựng lại sau mỗi lần xoá: xoá phím vừa gõ nối vào rồi vẫn sửa dấu được
+        // ("bạn" + 2 ⌫ s ra "bán").
+        if self.locked && !self.rebuilt {
             self.raw.clear();
             self.raw.extend_from_slice(&self.emitted);
             return Output::PASS;
         }
+        self.forced = false;
         self.rebuild(false);
         Output::PASS
     }
@@ -771,6 +774,10 @@ mod tests {
             }
         }
         assert_eq!(screen, "toi");
+        // Xoá phím vừa gõ nối thì từ lại sửa dấu được.
+        assert_eq!(Engine::default().type_after("bạn", "2\u{8}s"), "bán");
+        assert_eq!(telex("banj \u{8}22\u{8}\u{8}s"), "bán");
+        assert_eq!(telex("banj \u{8}22\u{8}s"), "bạn2s");
         // Sửa dấu từ có sẵn vẫn như cũ.
         assert_eq!(telex("banj \u{8}s"), "bán");
         assert_eq!(telex("moot \u{8}j"), "một");
