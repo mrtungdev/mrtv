@@ -6,8 +6,15 @@ Khi phát hành, đổi "Chưa phát hành" thành `[phiên bản] - ngày`, th�
 
 ## [Chưa phát hành]
 
+### Thêm
+- Hồ sơ ứng dụng cho Dia.
+- Mr TV báo khi phím đổi Việt ⇄ Anh trùng phím tắt đang bật của macOS (như ⌥⌘Space "Chọn nguồn tiếp theo"), trong menu và Cài đặt › Phím, và không cho đặt phím trùng.
+
 ### Sửa
 - Tự cập nhật chạy từ bản này. Bản 0.1.0 không tự cài được bản mới: Mr TV báo có bản mới và mở trang tải, bạn tải về rồi cài đè lên.
+- Zalo không còn "tự điền" chữ của tin vừa gửi vào đầu tin sau.
+- Xoá lùi về một từ rồi gõ thêm chữ làm nó không còn là tiếng Việt: từ đó giữ nguyên, không bị đổi thành phím gốc (*bạn* thêm `2` ra *bạn2*, không ra *banj2*).
+- Chrome, Zalo và các ứng dụng gõ đè chỉ gõ tiếng Việt khi đang dùng bộ gõ Mr TV, như ứng dụng của Apple. Hết cảnh ứng dụng này có dấu, ứng dụng kia không, và hết gõ hai lần khi lỡ chọn Telex của Apple.
 
 ## [0.1.0] - 2026-10-28
 
