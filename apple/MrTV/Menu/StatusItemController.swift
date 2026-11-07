@@ -30,7 +30,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
     func refresh() {
         let mode = model.currentMode
         // Bộ gõ đang dùng không phải Mr TV thì bộ gõ không nhận phím: hiện viền đứt như lúc tạm dừng.
-        let notSelected = mode == .vietnamese && model.frontProfile.path != .tap && !InputSourceInstaller.isSelected
+        let notSelected = mode == .vietnamese && !InputSourceInstaller.isSelected
         let paused = Permissions.secureInputApp != nil || notSelected
         item.button?.image = Self.icon(letter: mode == .vietnamese ? "V" : "E", filled: mode == .vietnamese, paused: paused)
         item.button?.toolTip = paused ? "Mr TV đang tạm dừng" : (mode == .vietnamese ? "Tiếng Việt" : "Tiếng Anh")
@@ -133,7 +133,7 @@ final class StatusItemController: NSObject, NSMenuDelegate {
         if let blocker = Permissions.secureInputApp {
             menu.addItem(warning("\(blocker) đang chặn bộ gõ", detail: "Rời ô mật khẩu là gõ lại được."))
             menu.addItem(item("Xem hướng dẫn") { $0.openHelp("mat khau") })
-        } else if InputSourceInstaller.status != .ready && model.frontProfile.path != .tap {
+        } else if InputSourceInstaller.status != .ready {
             menu.addItem(warning(InputSourceInstaller.status.problem, detail: "Gõ phím nào cũng ra chữ không dấu."))
             menu.addItem(item("Dùng bộ gõ Mr TV") { $0.useInputSource() })
         } else if !Permissions.accessibility {

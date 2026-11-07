@@ -1,4 +1,5 @@
 import AppKit
+import Carbon.HIToolbox
 import CoreGraphics
 
 /// Đường B: gõ bằng event tap cho các ứng dụng mà bộ gõ chuẩn hay bị gạch chân hoặc lệch chữ
@@ -14,6 +15,9 @@ final class TapTypist: @unchecked Sendable {
     private struct State {
         var path: TypingPath = .composing
         var mode: InputMode = .vietnamese
+        /// Nguồn nhập đang chọn là Mr TV. Chọn U.S. hay bộ gõ khác (Telex của Apple, tiếng Nhật) thì tap
+        /// để phím đi nguyên, như bộ gõ ở các ứng dụng gõ chuẩn: không gõ hai lần, không ứng dụng nào lệch.
+        var sourceSelected = true
         var delay: useconds_t = 0
         var fixAutocomplete = false
         /// Ứng dụng đang nhận phím: do bộ gõ báo, hoặc ứng dụng đứng trước.
@@ -67,7 +71,13 @@ final class TapTypist: @unchecked Sendable {
             DarwinNotice.modeChanged.observe {
                 Task { @MainActor in TapTypist.shared.frontAppChanged(bundleID: TapTypist.shared.state.current.client) }
             }
+            DistributedNotificationCenter.default().addObserver(
+                forName: NSNotification.Name(kTISNotifySelectedKeyboardInputSourceChanged as String), object: nil, queue: .main
+            ) { _ in
+                MainActor.assumeIsolated { TapTypist.shared.inputSourceChanged() }
+            }
         }
+        inputSourceChanged()
         let t = Thread { [weak self] in self?.runTap() }
         t.name = "dev.mrtung.mrtv.tap"
         t.qualityOfService = .userInteractive
@@ -91,6 +101,15 @@ final class TapTypist: @unchecked Sendable {
             Self.apply(profile, to: &$0)
             $0.mode = mode
             $0.needsReset = true
+        }
+    }
+
+    @MainActor
+    func inputSourceChanged() {
+        let selected = InputSourceInstaller.isSelected
+        state.withLock {
+            if $0.sourceSelected != selected { $0.needsReset = true }
+            $0.sourceSelected = selected
         }
     }
 
@@ -173,7 +192,7 @@ final class TapTypist: @unchecked Sendable {
         if st.quickBarOpen, let keys = quickBarKeys, keys(keyCode, st.quickBarList) {
             return nil
         }
-        guard st.path == .tap, st.mode == .vietnamese else { return pass }
+        guard st.path == .tap, st.mode == .vietnamese, st.sourceSelected else { return pass }
         if st.needsReset {
             forget(engine)
             state.withLock { $0.needsReset = false }
