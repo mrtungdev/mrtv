@@ -77,10 +77,6 @@ final class AppModel: ObservableObject {
         quickBarActions.removeAll { $0 == action.id }
     }
 
-    var frontProfile: AppProfile {
-        SharedStore.profile(for: frontApp?.bundleIdentifier)
-    }
-
     /// Ứng dụng có ô đang gõ, để đọc và đổi chế độ Việt/Anh cho đúng chỗ (Spotlight, không phải ứng dụng bên dưới).
     var typingClient: String? {
         TapTypist.shared.client ?? frontApp?.bundleIdentifier

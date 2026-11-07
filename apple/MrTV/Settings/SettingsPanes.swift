@@ -732,8 +732,9 @@ struct KeysPane: View {
                         ShortcutField(action: .mrtv, store: store, message: $message)
                     }
                 }
-                if let message {
+                if let message = message ?? store.macOSConflict(.toggle) ?? store.macOSConflict(.mrtv) {
                     Text(message).font(Fonts.text(11, .medium)).foregroundColor(Palette.bad).padding(.horizontal, 2)
+                        .fixedSize(horizontal: false, vertical: true)
                 }
                 FormNote("Đổi phím ở đây thì mọi chữ hướng dẫn trong Mr TV đổi theo. Mr TV báo ngay nếu phím trùng với phím của ứng dụng khác.")
             }

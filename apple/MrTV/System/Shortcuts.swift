@@ -108,11 +108,37 @@ final class ShortcutStore: ObservableObject {
         }
     }
 
+    /// Phím đã đặt mà phím tắt đang bật của macOS cũng dùng (bật sau khi đặt, hay macOS đổi mặc định).
+    /// macOS nhận phím trước nên Mr TV không đổi được Việt/Anh, còn nguồn nhập thì bị đổi ngầm.
+    func macOSConflict(_ action: ShortcutAction) -> String? {
+        guard case .combo(let code, let mods, let key) = trigger(action),
+              let name = Self.macOSShortcut(code: code, modifiers: mods) else { return nil }
+        return "\(mods.sorted().map(\.symbol).joined())\(key) cũng là phím \(name) của macOS, nên phím “\(action.title)” không chạy đúng. Đổi phím khác, hoặc tắt phím đó trong Cài đặt hệ thống › Bàn phím › Phím tắt."
+    }
+
+    /// Tên phím tắt đang bật trong Cài đặt hệ thống trùng với tổ hợp này (đọc đúng máy người dùng,
+    /// vì người dùng có thể đã đổi: "Chọn nguồn tiếp theo" thành ⌥⌘Space chẳng hạn).
+    static func macOSShortcut(code: UInt16, modifiers: [Modifier]) -> String? {
+        let names = [60: "đổi nguồn nhập", 61: "đổi nguồn nhập", 64: "Spotlight", 65: "tìm trong Finder"]
+        let all = UserDefaults(suiteName: "com.apple.symbolichotkeys")?.dictionary(forKey: "AppleSymbolicHotKeys") ?? [:]
+        let mask = modifiers.reduce(0) { $0 | Int($1.eventFlag.rawValue) }
+        for (id, name) in names {
+            guard let entry = all[String(id)] as? [String: Any], entry["enabled"] as? Bool == true,
+                  let p = (entry["value"] as? [String: Any])?["parameters"] as? [Int], p.count == 3 else { continue }
+            // Bỏ bit fn (phím mũi tên, F1–F12 mang theo); chỉ so ⇧⌃⌥⌘.
+            if p[1] == Int(code) && p[2] & 0x1E0000 == mask { return name }
+        }
+        return nil
+    }
+
     /// Tổ hợp mà macOS hay mọi ứng dụng đã dùng.
     static func systemConflict(code: UInt16, modifiers: [Modifier], key: String) -> String? {
         let mods = Set(modifiers)
         if mods.isEmpty || mods == [.shift] {
             return "Cần thêm ⌘, ⌃ hoặc ⌥, không thì phím này sẽ gõ ra chữ."
+        }
+        if let name = macOSShortcut(code: code, modifiers: modifiers) {
+            return "\(modifiers.sorted().map(\.symbol).joined())\(key) đang là phím \(name) của macOS, chọn phím khác nhé."
         }
         let taken: [(Set<Modifier>, String, String)] = [
             ([.command], "Space", "Spotlight"), ([.control], "Space", "đổi nguồn nhập của macOS"),

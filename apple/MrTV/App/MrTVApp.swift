@@ -86,6 +86,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 guard let me = AppDelegate.current else { return }
                 if !me.hotkeys.isRunning { me.hotkeys.start() }
                 if !TapTypist.shared.isRunning { TapTypist.shared.start() }
+                // Phòng khi lỡ thông báo đổi nguồn nhập: tap không được kẹt ở trạng thái để phím đi nguyên.
+                TapTypist.shared.inputSourceChanged()
                 me.status?.refresh()
             }
         }
@@ -106,7 +108,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
     // MARK: Việc dùng chung cho menu, phím và bảng nổi
 
     func toggleMode() {
-        setMode(SharedStore.mode(for: model.typingClient).toggled)
+        // Đang dùng nguồn nhập khác (U.S., bộ gõ khác) thì Mr TV không gõ: coi như đang tiếng Anh, bấm là sang Việt.
+        let mode = InputSourceInstaller.isSelected ? SharedStore.mode(for: model.typingClient) : .english
+        setMode(mode.toggled)
     }
 
     /// Đổi Việt/Anh cho ô đang gõ (cả Spotlight, dù ứng dụng khác vẫn đứng trước).
