@@ -19,6 +19,7 @@
   { "bundleID": "com.microsoft.edgemac", "name": "Edge", "path": "tap", "delayMs": 3, "fixAutocomplete": true },
   { "bundleID": "com.brave.Browser", "name": "Brave", "path": "tap", "delayMs": 3, "fixAutocomplete": true },
   { "bundleID": "company.thebrowser.Browser", "name": "Arc", "path": "tap", "delayMs": 3, "fixAutocomplete": true },
+  { "bundleID": "company.thebrowser.dia", "name": "Dia", "path": "tap", "delayMs": 3, "fixAutocomplete": true },
   { "bundleID": "com.operasoftware.Opera", "name": "Opera", "path": "tap", "delayMs": 3, "fixAutocomplete": true },
   { "bundleID": "com.vivaldi.Vivaldi", "name": "Vivaldi", "path": "tap", "delayMs": 3, "fixAutocomplete": true },
   { "bundleID": "org.mozilla.firefox", "name": "Firefox", "path": "tap", "delayMs": 3, "fixAutocomplete": true },
