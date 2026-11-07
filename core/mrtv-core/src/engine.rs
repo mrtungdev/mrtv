@@ -98,6 +98,9 @@ pub struct Engine {
     locked: bool,
     /// Giữ phím thô cho tới hết từ: sau esc, từ quá dài, hoặc chữ không dựng lại được bằng phím.
     forced: bool,
+    /// Phím của từ được dựng lại từ chữ trên màn hình (xoá lùi về, hay chữ trước con trỏ), không phải
+    /// phím người dùng đã bấm: đừng bao giờ hiện chúng ra.
+    rebuilt: bool,
     /// Chữ của từ hiện tại đang nằm trên màn hình.
     emitted: Vec<char>,
     next: Vec<char>,
@@ -178,6 +181,7 @@ impl Engine {
             raw: Vec::with_capacity(32),
             locked: false,
             forced: false,
+            rebuilt: false,
             emitted: Vec::with_capacity(32),
             next: Vec::with_capacity(32),
             word: Word::with_capacity(32),
@@ -269,6 +273,7 @@ impl Engine {
         self.emitted.clear();
         self.locked = false;
         self.forced = false;
+        self.rebuilt = false;
         self.word.clear();
     }
 
@@ -334,6 +339,17 @@ impl Engine {
             self.next.extend_from_slice(&self.raw);
         } else {
             self.transform();
+            if self.locked && self.rebuilt {
+                // Gõ thêm làm từ lấy lại từ màn hình thành không phải tiếng Việt: giữ nguyên chữ đó rồi gõ nối
+                // ("bạn" + a ra "bạna", không ra "banja"). Trợ năng báo chữ cũ (ô Zalo vừa gửi tin) cũng
+                // chỉ ra đúng phím vừa gõ, không gõ lại chữ của tin trước.
+                self.forced = true;
+                self.raw.clear();
+                self.raw.extend_from_slice(&self.emitted);
+                self.raw.push(c);
+                self.next.clear();
+                self.next.extend_from_slice(&self.raw);
+            }
         }
         let out = self.diff();
         let natural =
@@ -596,6 +612,8 @@ impl Engine {
                 !(restored && self.raw == before && is_complete(&self.display, Tone::Acute));
             self.raw.clear();
             self.raw.extend_from_slice(&before);
+        } else {
+            self.rebuilt = true;
         }
         self.emitted = before;
     }
@@ -729,6 +747,33 @@ mod tests {
         // Sau dấu cách thì là từ mới; xoá lùi vẫn nối được về từ trước.
         assert_eq!(Engine::default().type_after("hoa ", "f"), "hoa f");
         assert_eq!(Engine::default().type_after("hoa ", "\u{8}f"), "hoà");
+    }
+
+    #[test]
+    fn rebuilt_word_never_shows_rebuilt_keys() {
+        // Gõ thêm làm từ có sẵn thành không phải tiếng Việt thì gõ nối, không đổi từ đó thành phím dựng lại.
+        assert_eq!(telex("banj \u{8}k"), "bạnk");
+        assert_eq!(telex("banj \u{8}2"), "bạn2");
+        assert_eq!(
+            Engine::default().type_after("xin chào bạn", "k"),
+            "xin chào bạnk"
+        );
+        // Trợ năng còn báo chữ của tin vừa gửi, ô đã trống: chỉ hiện đúng phím vừa gõ.
+        let mut e = Engine::default();
+        e.resume("ok nhé");
+        let mut screen = String::new();
+        for c in "toi".chars() {
+            let out = e.process(Key::Char(c));
+            assert_eq!(out.backspaces, 0);
+            screen.push_str(&e.insert_string());
+            if !out.consumed {
+                screen.push(c);
+            }
+        }
+        assert_eq!(screen, "toi");
+        // Sửa dấu từ có sẵn vẫn như cũ.
+        assert_eq!(telex("banj \u{8}s"), "bán");
+        assert_eq!(telex("moot \u{8}j"), "một");
     }
 
     #[test]
